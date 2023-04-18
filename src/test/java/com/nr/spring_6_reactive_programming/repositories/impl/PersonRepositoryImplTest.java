@@ -1,15 +1,15 @@
 package com.nr.spring_6_reactive_programming.repositories.impl;
 
-import com.nr.spring_6_reactive_programming.domain.Person;
-import com.nr.spring_6_reactive_programming.repositories.PersonRepository;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.nr.spring_6_reactive_programming.domain.Person;
+import com.nr.spring_6_reactive_programming.repositories.PersonRepository;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 public class PersonRepositoryImplTest {
 
@@ -115,5 +115,22 @@ public class PersonRepositoryImplTest {
   void testGetByIdNoElement() {
     Mono<Person> personMono = personRepository.getPersonById(9);
     assertFalse(personMono.hasElement().block());
+  }
+
+  @Test
+  void testGetByIdStepVerifier() {
+    Mono<Person> personMono = personRepository.getPersonById(2);
+    StepVerifier.create(personMono).expectNextCount(1).verifyComplete();
+    personMono.subscribe(person -> System.out.println(person.getFirstName()));
+  }
+
+  /**
+ * 
+ */
+@Test
+  void testGetByIdNoElementStepVerifier() {
+    Mono<Person> personMono = personRepository.getPersonById(9);
+    StepVerifier.create(personMono).expectNextCount(0).verifyComplete();
+    personMono.subscribe(person -> System.out.println(person.getFirstName()));
   }
 }
